@@ -19,25 +19,54 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 var pyScript = """
-    def MutateModel(person):
-        person.name = person.name + ' the King'
-        person.age = person.age*2
-        return person
+    obj = MutateModel(obj)
+    """;
 
-    MutateModel(obj)
+var abouScript = """
+    from System import *
+    import PageNode
+    #from Abou.Calamare.Web import *
+
+    class Fel(PageNode):
+        def GetNextPage(self):
+            #exempel: logikhopp beroende på val i tjänsten 
+            answer = self.GetAnswer('x.3')
+            if answer.Contains('Ja'):
+                return self.GetPage('Contact')
+            return self.GetPage('SummaryPage')
+
+    fel = Fel()
+    fel.GetNextPage()
     """;
 
 app.MapPost("/mutate", (Person person) =>
 {
     var scriptEngine = Python.CreateEngine();
+    scriptEngine.Runtime.LoadAssembly(typeof(PageNode).Assembly);
     var scope = scriptEngine.CreateScope();
-    scope.SetVariable("obj", person);
-    scriptEngine.Execute(pyScript, scope);
-    var p = scope.GetVariable<Person>("obj");
-    return p;
+    //scope.SetVariable("obj", person);
+    //scope.MutateModel = new Func<Person, Person>(p => new Person($"{p.name} the King", p.age * 2));
+
+    scriptEngine.Execute(abouScript, scope);
+    //var p = scope.GetVariable<Person>("obj");
+    return "";
 }).WithDisplayName("Mutate model with python");
 
 app.Run();
+
+public class PageNode
+{
+    public string GetAnswer(string path)
+    {
+        Console.WriteLine($"GetAnswer: {path}");
+        return "Ja";
+    }
+
+    public void GetPage(string pageName)
+    {
+        Console.WriteLine($"GetPage: {pageName}");
+    }
+}
 
 public record Person(string name, int age);
 
