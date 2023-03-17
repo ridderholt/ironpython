@@ -22,14 +22,12 @@ var pyScript = """
     obj = MutateModel(obj)
     """;
 
-var abouScript = """
+var aScript = """
     from System import *
     import PageNode
-    #from Abou.Calamare.Web import *
 
     class Fel(PageNode):
         def GetNextPage(self):
-            #exempel: logikhopp beroende på val i tjänsten 
             answer = self.GetAnswer('x.3')
             if answer.Contains('Ja'):
                 return self.GetPage('Contact')
@@ -47,7 +45,7 @@ app.MapPost("/mutate", (Person person) =>
     //scope.SetVariable("obj", person);
     //scope.MutateModel = new Func<Person, Person>(p => new Person($"{p.name} the King", p.age * 2));
 
-    scriptEngine.Execute(abouScript, scope);
+    scriptEngine.Execute(aScript, scope);
     //var p = scope.GetVariable<Person>("obj");
     return "";
 }).WithDisplayName("Mutate model with python");
